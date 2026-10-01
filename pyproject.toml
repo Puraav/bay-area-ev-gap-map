@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evgap"
+version = "0.1.0"
+description = "Which Bay Area ZIP codes have the most EVs per public charger?"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Puraav Ghuwalewala" }]
+requires-python = ">=3.11"
+dependencies = [
+    "pandas",
+    "geopandas",
+    "shapely",
+    "pyarrow",
+    "requests",
+    "python-dotenv",
+    "streamlit",
+    "pydeck",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
