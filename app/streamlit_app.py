@@ -171,8 +171,8 @@ c2.metric("Public Level 2 ports", fmt_int(tot_l2))
 c3.metric("Public DC fast ports", fmt_int(tot_dc))
 c4.metric("EVs per public port", fmt_ratio(tot_evs / (tot_l2 + tot_dc)) if tot_l2 + tot_dc else "–")
 
-tab_map, tab_rank, tab_zip, tab_cty, tab_method = st.tabs(
-    ["Map", "Rankings", "ZIP detail", "Counties", "Method"]
+tab_map, tab_rank, tab_zip, tab_cty, tab_city, tab_method = st.tabs(
+    ["Map", "Rankings", "ZIP detail", "Counties", "SF vs Mumbai", "Method"]
 )
 
 # ---------- map ----------
@@ -410,6 +410,36 @@ with tab_cty:
         },
     )
 
+# ---------- SF vs Mumbai ----------
+with tab_city:
+    city_csv = config.PROCESSED_DIR / "city_comparison.csv"
+    if not city_csv.exists():
+        st.info("Run `python -m evgap.mumbai` to build the SF vs Mumbai comparison.")
+    else:
+        cc = json.loads((config.PROCESSED_DIR / "city_comparison.json").read_text())
+        d = cc["data_access"]
+        st.subheader("What can you find out about EVs and chargers, from public data?")
+        st.markdown(
+            f"San Francisco publishes EV registrations for **{d['sf_geo_units']} ZIP codes** "
+            f"(~{d['sf_people_per_unit']:,} people each) and has an official charger API listing "
+            f"**{d['sf_official_charger_stations']:,} public stations**. Mumbai's EV counts come "
+            f"from **{d['mumbai_geo_units']} RTOs** (~{d['mumbai_people_per_unit']:,} people each), "
+            "exported by hand, and we found no official public-charger list. OpenStreetMap shows "
+            f"just **{d['mumbai_open_charger_stations']} stations** for the whole city."
+        )
+        st.dataframe(pd.read_csv(city_csv), hide_index=True)
+        c1, c2 = st.columns(2)
+        for col, name in [(c1, "05_sf_vs_mumbai_data.png"), (c2, "06_mumbai_ev_mix.png")]:
+            img = config.CHARTS_DIR / name
+            if img.exists():
+                col.image(str(img))
+        st.caption(
+            "Mumbai = Greater Mumbai (RTOs MH1, MH2, MH3, MH47; Mumbai City + Suburban districts). "
+            "Vahan counts are cumulative registrations, not net of scrapped vehicles. "
+            f"OpenStreetMap also undercounts SF: it has {cc['osm_coverage_sf']:.0%} of NREL's "
+            "public ports, so missing chargers in open data is the finding, not a charger count."
+        )
+
 # ---------- method ----------
 with tab_method:
     st.markdown(f"""
@@ -421,6 +451,9 @@ with tab_method:
 - **Geography:** [Census 2020 ZCTA ↔ county and place relationship files](https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.html)
   and [cartographic ZCTA boundaries (1:500k)](https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html).
   Each ZCTA is assigned to the county it overlaps most by land area.
+- **Mumbai:** [Vahan dashboard](https://vahan.parivahan.gov.in/vahan4dashboard/) RTO exports
+  (vehicle class × fuel, till today), [OpenStreetMap](https://www.openstreetmap.org/) charging stations and
+  boundaries, Census of India 2011 population.
 - **Renters:** [Census ACS 5-year table B25003 (tenure)](https://www.census.gov/programs-surveys/acs/data/summary-file.html), by ZCTA.
 
 ### Metrics

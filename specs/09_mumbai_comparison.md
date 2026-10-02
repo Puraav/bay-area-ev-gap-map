@@ -1,6 +1,9 @@
-# Spec 09 (draft) — San Francisco vs Mumbai
+# Spec 09 — San Francisco vs Mumbai (data-access angle)
 
-## Goal
+## Update (as built)
+OpenStreetMap lists only 4 charging stations for Greater Mumbai, and has 15% of NREL's ports in SF, so a chargers-per-EV ratio for Mumbai isn't credible. The comparison is reframed around **what public data exists** in each city (geographic resolution, access method, charger registry, population vintage) plus the EV facts Vahan supports (EV share of cars, vehicle mix). Charts: `05_sf_vs_mumbai_data.png` (scorecard) and `06_mumbai_ev_mix.png`. Port-density and DC-fast metrics are kept in `city_comparison.json` but not headlined.
+
+## Original goal
 A fair, city-level comparison of public EV charging in **San Francisco** and **Greater Mumbai**: one table, two charts, and 3 findings. Every number comes from public data, with the caveats stated next to it.
 
 India's data is coarser than California's, so the comparison runs at the **city** level, not ZIP/PIN level.

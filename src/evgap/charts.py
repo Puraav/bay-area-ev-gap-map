@@ -305,6 +305,103 @@ def chart_growth(z: pd.DataFrame, meta: dict) -> str:
     return save(fig, "04_growth_vs_ports.png")
 
 
+def load_city() -> dict | None:
+    """SF vs Mumbai comparison (python -m evgap.mumbai), if it has been built."""
+    path = config.PROCESSED_DIR / "city_comparison.json"
+    return json.loads(path.read_text()) if path.exists() else None
+
+
+def city_subtitle(cc: dict) -> str:
+    """Source line for the SF vs Mumbai charts."""
+    osm = datetime.fromisoformat(cc["osm_fetched_at"]).strftime("%b %Y")
+    return f"Data: CA DMV, NREL AFDC, Vahan ({len(cc['Mumbai']['rtos'])} Mumbai RTOs), OpenStreetMap. {osm}."
+
+
+def chart_data_access(cc: dict) -> str:
+    """05: scorecard of what public data exists for SF vs Mumbai."""
+    s, m, d = cc["San Francisco"], cc["Mumbai"], cc["data_access"]
+    title = (
+        f"One Mumbai EV data area covers {d['resolution_ratio']}× more\n"
+        "people than one San Francisco ZIP code"
+    )
+    rows = [
+        (
+            "EV counts published for",
+            f"{d['sf_geo_units']} ZIP codes",
+            f"{d['mumbai_geo_units']} RTOs",
+        ),
+        ("People per area", f"{d['sf_people_per_unit']:,}", f"{d['mumbai_people_per_unit']:,}"),
+        ("Getting the EV counts", "Open CSV + API", "Manual Excel export\nper RTO"),
+        (
+            "Official public\ncharger list",
+            f"Yes (NREL API)\n{d['sf_official_charger_stations']:,} stations",
+            "None found",
+        ),
+        (
+            "Chargers in\nOpenStreetMap",
+            f"{s['osm_stations']:,} stations",
+            f"{m['osm_stations']:,} stations",
+        ),
+        (
+            "Latest official\npopulation count",
+            s["population_year"].replace("ACS ", "ACS\n"),
+            f"Census {m['population_year']}",
+        ),
+    ]
+    fig = plt.figure(figsize=(SIZE_IN, SIZE_IN), dpi=DPI)
+    fig.text(0.05, 0.955, title, fontsize=17, fontweight="bold", color=INK, va="top")
+    fig.text(
+        0.05,
+        0.875,
+        city_subtitle(cc) + "\nWhat anyone can find out, from public sources, "
+        "about EVs and chargers in each city.",
+        fontsize=10,
+        color=INK_2,
+        va="top",
+    )
+    fig.text(0.05, 0.025, FOOTER, fontsize=9, color=MUTED)
+    x_label, x_sf, x_mum = 0.05, 0.42, 0.72
+    top, step = 0.74, 0.105
+    fig.text(
+        x_sf, top + 0.045, "San Francisco", fontsize=13, fontweight="bold", color=INK_2, va="center"
+    )
+    fig.text(
+        x_mum, top + 0.045, "Mumbai", fontsize=13, fontweight="bold", color=ACCENT, va="center"
+    )
+    for i, (label, a, b) in enumerate(rows):
+        y = top - i * step
+        fig.add_artist(plt.Line2D([0.05, 0.95], [y - step / 2] * 2, color="#e6e5e0", lw=1))
+        fig.text(x_label, y, label, fontsize=11.5, color=INK_2, va="center")
+        fig.text(x_sf, y, a, fontsize=12.5, color=INK, va="center")
+        fig.text(x_mum, y, b, fontsize=12.5, color=INK, va="center", fontweight="bold")
+    return save(fig, "05_sf_vs_mumbai_data.png")
+
+
+def chart_mumbai_mix(cc: dict) -> str:
+    """06: Mumbai's EVs by vehicle type (two-wheelers vs cars)."""
+    m = cc["Mumbai"]
+    mix = [
+        ("Two-wheelers", m["ev_two_wheelers"]),
+        ("Cars + cabs", m["ev_cars"]),
+        ("Other (buses, goods)", m["ev_other"]),
+        ("Three-wheelers", m["ev_three_wheelers"]),
+    ]
+    total = sum(v for _, v in mix)
+    title = (
+        f"Mumbai has more electric two-wheelers ({m['ev_two_wheelers']:,})\n"
+        f"than electric cars ({m['ev_cars']:,})"
+    )
+    sub = (
+        city_subtitle(cc) + f"\nAll {total:,} EVs ever registered at Mumbai's 4 RTOs, by type. "
+        f"EVs are {m['ev_share_of_cars']:.1%} of registered cars (SF: "
+        f"{cc['San Francisco']['ev_share_of_cars']:.1%})."
+    )
+    fig, ax = new_figure(title, sub)
+    ax.set_position((0.30, 0.10, 0.62, 0.70))
+    hbar(ax, [k for k, _ in mix], [v for _, v in mix], [i == 0 for i in range(len(mix))])
+    return save(fig, "06_mumbai_ev_mix.png")
+
+
 def main() -> None:
     """Export all charts and print a one-line description of each."""
     z, c, meta = load()
@@ -314,6 +411,9 @@ def main() -> None:
         chart_map(z, meta),
         chart_growth(z, meta),
     ]
+    cc = load_city()
+    if cc:
+        paths += [chart_data_access(cc), chart_mumbai_mix(cc)]
     for p in paths:
         size = config.CHARTS_DIR.joinpath(p.split("/")[-1]).stat().st_size / 1e6
         print(f"{p.split('/')[-1]}  ({size:.2f} MB)")

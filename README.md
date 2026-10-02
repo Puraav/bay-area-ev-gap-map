@@ -24,6 +24,20 @@ Run the interactive map locally with `streamlit run app/streamlit_app.py` (live 
 |---|---|
 | ![Top gap ZIPs](charts/01_top_gap_zips.png) | ![County comparison](charts/02_county_comparison.png) |
 
+## San Francisco vs Mumbai: the data gap
+
+I tried to run the same analysis for Mumbai and couldn't. The public data isn't there yet.
+
+- **EV counts are published for areas about 105× larger.** San Francisco's DMV data covers 28 ZIP codes (about 29,651 people each). Mumbai's only source, the Vahan dashboard, reports by RTO: 4 of them for about 12.4 million people (about 3.1 million each).
+- **No API, only manual exports.** California publishes CSVs and an API. For Mumbai I clicked out one Excel file per RTO by hand.
+- **No official public-charger list.** SF has NREL's API, with 475 public stations and their port counts. We found no equivalent for Mumbai, and OpenStreetMap lists just **4 charging stations** for the whole city. (OpenStreetMap is weak in SF too, with 15% of NREL's ports, so the finding is missing data, not missing chargers.)
+- **The latest official population count for Mumbai is from 2011.**
+- What the data does show: EVs are **2.7%** of registered cars in Mumbai vs **12.4%** in SF. Mumbai also has more electric **two-wheelers (41,014)** than electric cars (33,948).
+
+![SF vs Mumbai data access](charts/05_sf_vs_mumbai_data.png)
+
+Mumbai = Greater Mumbai: RTOs MH1, MH2, MH3 and MH47, matching the Mumbai City and Mumbai Suburban districts. Vahan counts are cumulative registrations and aren't net of scrapped vehicles. Built with `python -m evgap.mumbai` after placing the Vahan exports in `data/raw/mumbai/vahan_<rto>.xlsx`.
+
 ## What this measures
 
 | Metric | Definition |
@@ -76,6 +90,7 @@ src/evgap/
   fetch.py       download DMV, NREL, Census inputs → data/raw/
   build.py       ZIP + county metrics → data/processed/
   findings.py    headline numbers → findings.json
+  mumbai.py      SF vs Mumbai data-access comparison
   charts.py      PNGs → charts/
 app/streamlit_app.py   interactive map, rankings, ZIP detail
 tests/test_build.py    data-integrity and unit tests (CI on every push)
