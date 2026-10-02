@@ -96,36 +96,47 @@ def ramp(values: pd.Series) -> list[list[int]]:
     return out
 
 
-def build_layer_data(z: pd.DataFrame, geo: dict, metric: str) -> dict:
-    """Attach colours and tooltip strings to the GeoJSON features for the shown ZIPs."""
+@st.cache_data
+def load_polygons() -> pd.DataFrame:
+    """One row per ZCTA polygon part: zip + list of rings ([[lon, lat], ...]) for PolygonLayer."""
+    rows = []
+    for f in load_geojson()["features"]:
+        g = f["geometry"]
+        parts = [g["coordinates"]] if g["type"] == "Polygon" else g["coordinates"]
+        for rings in parts:
+            rows.append({"zip": f["properties"]["zip"], "polygon": rings})
+    return pd.DataFrame(rows)
+
+
+def build_layer_data(z: pd.DataFrame, metric: str) -> pd.DataFrame:
+    """Polygon rows for the shown ZIPs, with fill colour, outline and tooltip strings."""
     z = z.copy()
     vals = z[metric]
     if metric == "evs_per_port":  # zero-port ZIPs are the worst case: paint darkest
         vals = vals.fillna(vals.max())
-    z["_fill"] = ramp(vals)
-    rows = z.set_index("zip")
-    feats = []
-    for f in geo["features"]:
-        zp = f["properties"]["zip"]
-        if zp not in rows.index:
-            continue
-        r = rows.loc[zp]
-        props = {
-            "zip": zp,
-            "county": r["county"],
-            "city": r["city"],
-            "evs": fmt_int(r["evs_2026"]),
-            "l2": fmt_int(r["l2_ports"]),
-            "dcfc": fmt_int(r["dcfc_ports"]),
-            "epp": "no public ports" if r["no_public_ports"] else fmt_ratio(r["evs_per_port"]),
-            "rank": "not ranked (<200 EVs)" if pd.isna(r["gap_rank"]) else f"#{int(r['gap_rank'])}",
-            "metric": FORMATTERS[metric](r[metric]),
-            "fill": r["_fill"],
-            "line": ZERO_PORT_OUTLINE if r["no_public_ports"] else [255, 255, 255, 180],
-            "lw": 3 if r["no_public_ports"] else 0.5,
-        }
-        feats.append({"type": "Feature", "geometry": f["geometry"], "properties": props})
-    return {"type": "FeatureCollection", "features": feats}
+    z["fill"] = ramp(vals)
+    z["evs"] = z["evs_2026"].map(fmt_int)
+    z["l2"] = z["l2_ports"].map(fmt_int)
+    z["dcfc"] = z["dcfc_ports"].map(fmt_int)
+    z["epp"] = [
+        "no public ports" if n else fmt_ratio(v)
+        for n, v in zip(z["no_public_ports"], z["evs_per_port"], strict=True)
+    ]
+    z["rank"] = ["not ranked (<200 EVs)" if pd.isna(r) else f"#{int(r)}" for r in z["gap_rank"]]
+    z["metric_txt"] = z[metric].map(FORMATTERS[metric])
+    cols = [
+        "zip",
+        "city",
+        "county",
+        "evs",
+        "l2",
+        "dcfc",
+        "epp",
+        "rank",
+        "metric_txt",
+        "fill",
+    ]
+    return load_polygons().merge(z[cols], on="zip")
 
 
 # ---------- data ----------
@@ -177,19 +188,37 @@ tab_map, tab_rank, tab_zip, tab_cty, tab_city, tab_method = st.tabs(
 
 # ---------- map ----------
 with tab_map:
-    geo = build_layer_data(z_map, load_geojson(), metric)
+    polys = build_layer_data(z_map, metric)
+    # Fixed widths in metres with a pixel floor: per-feature width accessors blew up into
+    # screen-filling strokes in pydeck, so outlines use constants instead.
     layers = [
         pdk.Layer(
-            "GeoJsonLayer",
-            geo,
-            pickable=True,
+            "PolygonLayer",
+            polys,
+            get_polygon="polygon",
+            get_fill_color="fill",
+            get_line_color=[255, 255, 255, 170],
+            get_line_width=15,
+            line_width_min_pixels=0.5,
             stroked=True,
             filled=True,
-            get_fill_color="properties.fill",
-            get_line_color="properties.line",
-            get_line_width="properties.lw",
-            line_width_units="pixels",
-        )
+            pickable=True,
+            auto_highlight=True,
+        ),
+        pdk.Layer(
+            "PolygonLayer",
+            polys[
+                polys["zip"].isin(z_map.loc[z_map["no_public_ports"] & z_map["rankable"], "zip"])
+            ],
+            get_polygon="polygon",
+            get_line_color=ZERO_PORT_OUTLINE,
+            get_line_width=60,
+            line_width_min_pixels=2,
+            line_width_max_pixels=3,
+            stroked=True,
+            filled=False,
+            pickable=False,
+        ),
     ]
     if show_stations and stations is not None:
         s = stations[stations["zip"].isin(set(z_map["zip"]))].copy()
@@ -210,7 +239,7 @@ with tab_map:
         )
     tooltip = {
         "html": "<b>{zip}</b> · {city}, {county}<br/>"
-        f"{METRICS[metric]}: <b>{{metric}}</b><br/>"
+        f"{METRICS[metric]}: <b>{{metric_txt}}</b><br/>"
         "EVs: {evs}<br/>L2 ports: {l2} · DCFC ports: {dcfc}<br/>"
         "EVs per port: {epp}<br/>Gap rank: {rank}",
         "style": {"fontSize": "13px"},
@@ -225,7 +254,7 @@ with tab_map:
         height=620,
     )
     st.caption(
-        "Lighter → darker = bigger value. Blue outline = ZIP with no public charging ports. "
+        "Lighter → darker = bigger value. Blue outline = ZIP with ≥ 200 EVs and no public charging ports. "
         "Grey = no data. Colour scale clipped at the 5th–95th percentile."
         + (" Dots: blue = has DC fast, grey = Level 2 only." if show_stations else "")
     )
