@@ -14,3 +14,4 @@ data/processed/*
 !data/processed/county_metrics.csv
 !data/processed/bay_area_zcta.geojson
 !data/processed/build_meta.json
+!data/processed/findings.json

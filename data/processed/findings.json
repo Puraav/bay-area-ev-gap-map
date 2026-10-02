@@ -1,0 +1,81 @@
+{
+  "bay_area": {
+    "evs": 633018,
+    "bevs": 511942,
+    "phevs": 121076,
+    "public_ports": 17869,
+    "l2_ports": 13381,
+    "dcfc_ports": 4488,
+    "evs_per_port": 35.4,
+    "ev_growth_2y": 0.421
+  },
+  "top_gap_zip": {
+    "zip": "94114",
+    "city": "San Francisco",
+    "county": "San Francisco",
+    "evs": 3058,
+    "public_ports": 0,
+    "evs_per_port": null
+  },
+  "top_gap_zip_with_ports": {
+    "zip": "94131",
+    "city": "San Francisco",
+    "county": "San Francisco",
+    "evs": 2859,
+    "public_ports": 2,
+    "evs_per_port": 1429.5,
+    "times_bay_area": 40.4
+  },
+  "counties": {
+    "worst": {
+      "county": "Contra Costa",
+      "evs_per_port": 72.0
+    },
+    "best": {
+      "county": "Napa",
+      "evs_per_port": 15.0
+    },
+    "ratio": 4.8
+  },
+  "zero_port_zips": {
+    "count": 17,
+    "evs": 25453,
+    "zips": [
+      "94114",
+      "94610",
+      "94127",
+      "94618",
+      "94552",
+      "94134",
+      "94708",
+      "94803",
+      "94518",
+      "95130",
+      "94703",
+      "94601",
+      "94505",
+      "94517",
+      "94572",
+      "94037",
+      "94951"
+    ]
+  },
+  "fastest_growing_underserved": {
+    "zip": "94601",
+    "city": "Oakland",
+    "county": "Alameda",
+    "evs": 1105,
+    "public_ports": 0,
+    "evs_per_port": null,
+    "ev_growth_2y": 0.59,
+    "gap_score": 100.0,
+    "growth_threshold_p75": 0.485,
+    "gap_threshold_p75": 81.0,
+    "candidates": 10
+  },
+  "dc_fast": {
+    "bevs_per_dcfc": 114.1,
+    "tesla_share_of_dcfc": 0.575
+  },
+  "ranked_zips": 234
+}
