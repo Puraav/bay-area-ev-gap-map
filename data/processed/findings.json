@@ -77,5 +77,15 @@
     "bevs_per_dcfc": 114.1,
     "tesla_share_of_dcfc": 0.575
   },
+  "top_priority_zip": {
+    "zip": "94601",
+    "city": "Oakland",
+    "county": "Alameda",
+    "evs": 1105,
+    "public_ports": 0,
+    "evs_per_port": null,
+    "renter_share": 0.636,
+    "priority_score": 93.2
+  },
   "ranked_zips": 234
 }

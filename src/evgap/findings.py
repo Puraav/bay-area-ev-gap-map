@@ -72,6 +72,11 @@ def compute(z: pd.DataFrame, c: pd.DataFrame) -> dict:
             "bevs_per_dcfc": round(bay["bevs_per_dcfc"], 1),
             "tesla_share_of_dcfc": round(bay["tesla_dcfc_ports"] / bay["dcfc_ports"], 3),
         },
+        "top_priority_zip": {
+            **zip_info(pr := r.sort_values("priority_score", ascending=False).iloc[0]),
+            "renter_share": round(pr["renter_share"], 3),
+            "priority_score": round(pr["priority_score"], 1),
+        },
         "ranked_zips": len(r),
     }
 
@@ -117,6 +122,13 @@ def main() -> None:
     print(
         f"6. DC fast: {dc['bevs_per_dcfc']} battery EVs per public DC fast port; "
         f"{dc['tesla_share_of_dcfc'] * 100:.0f}% of DC fast ports are Tesla."
+    )
+    p = f["top_priority_zip"]
+    ports = "zero public ports" if p["public_ports"] == 0 else f"{p['public_ports']} public ports"
+    print(
+        f"7. Top priority ZIP (many EVs, few chargers, mostly renters): {p['zip']} ({p['city']}), "
+        f"{p['evs']:,} EVs, {ports}, {p['renter_share'] * 100:.0f}% of households rent "
+        f"(priority score {p['priority_score']}/100)."
     )
 
 

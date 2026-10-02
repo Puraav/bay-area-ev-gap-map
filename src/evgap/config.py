@@ -26,3 +26,11 @@ DMV_BASELINE_LABEL = "1/1/2024"
 
 EV_FUELS = {"Battery Electric", "Plug-in Hybrid"}
 GEOJSON_TOLERANCE = 0.0005  # degrees, for the simplified ZCTA GeoJSON
+
+# ACS 5-year tenure table (B25003), newest vintage first. The Census API now needs a key,
+# so we use the keyless table-based summary file on www2.census.gov instead.
+ACS_YEARS = [2024, 2023]
+ACS_URL = (
+    "https://www2.census.gov/programs-surveys/acs/summary_file/{year}/table-based-SF/"
+    "data/5YRData/acsdt5y{year}-b25003.dat"
+)

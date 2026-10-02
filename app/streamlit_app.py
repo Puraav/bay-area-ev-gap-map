@@ -16,6 +16,8 @@ METRICS = {
     "bevs_per_dcfc": "BEVs per DC fast port",
     "ev_growth_2y": "2-year EV growth",
     "ev_share": "EV share of light-duty vehicles",
+    "renter_share": "Renter share of households",
+    "priority_score": "Priority score (gap + renters, 0–100)",
 }
 LIGHT, DARK = (255, 237, 222), (140, 45, 4)  # single-hue orange ramp
 NO_DATA = [210, 210, 210, 120]
@@ -76,6 +78,8 @@ FORMATTERS = {
     "bevs_per_dcfc": fmt_ratio,
     "ev_growth_2y": fmt_pct,
     "ev_share": fmt_pct,
+    "renter_share": fmt_pct,
+    "priority_score": fmt_ratio,
 }
 
 
@@ -241,6 +245,8 @@ with tab_rank:
             "DCFC ports": r["dcfc_ports"],
             "EVs per port": r["evs_per_port"],
             "2-yr EV growth": r["ev_growth_2y"] * 100,
+            "Renter share": r["renter_share"] * 100,
+            "Priority score": r["priority_score"],
             "Top network": r["top_network"].fillna(""),
         }
     )
@@ -259,6 +265,8 @@ with tab_rank:
             "DCFC ports": st.column_config.NumberColumn(format="localized"),
             "EVs per port": st.column_config.NumberColumn(format="%.1f"),
             "2-yr EV growth": st.column_config.NumberColumn(format="%.1f%%"),
+            "Renter share": st.column_config.NumberColumn(format="%.0f%%"),
+            "Priority score": st.column_config.NumberColumn(format="%.0f"),
         },
     )
     st.download_button(
@@ -413,6 +421,7 @@ with tab_method:
 - **Geography:** [Census 2020 ZCTA ↔ county and place relationship files](https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.html)
   and [cartographic ZCTA boundaries (1:500k)](https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html).
   Each ZCTA is assigned to the county it overlaps most by land area.
+- **Renters:** [Census ACS 5-year table B25003 (tenure)](https://www.census.gov/programs-surveys/acs/data/summary-file.html), by ZCTA.
 
 ### Metrics
 | Metric | Definition |
@@ -425,6 +434,8 @@ with tab_method:
 | EV share | EVs ÷ all light-duty vehicles |
 | Gap score | Percentile (0–100) of EVs per port among ZIPs with ≥ {config.MIN_EVS_FOR_RANKING} EVs; zero-port ZIPs = 100 |
 | Gap rank | 1 = biggest gap. Zero-port ZIPs first (by EV count), then by EVs per port |
+| Renter share | Renter-occupied ÷ occupied housing units (ACS 5-year, table B25003) |
+| Priority score | Mean of gap score and renter-share percentile (0–100): many EVs, few chargers, mostly renters |
 
 ### Limitations
 - DMV registrations are a 1 Jan 2026 snapshot by owner ZIP, not where cars charge; commuters charge near work.

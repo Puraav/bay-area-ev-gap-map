@@ -172,6 +172,32 @@ def stations_per_zip(st: pd.DataFrame) -> pd.DataFrame:
     return out.reset_index()
 
 
+def load_renter_share() -> pd.DataFrame | None:
+    """Renter-occupied share of occupied housing units per ZCTA (ACS B25003), if fetched."""
+    path = config.RAW_DIR / "acs_tenure.dat"
+    if not path.exists():
+        return None
+    acs = pd.read_csv(path, sep="|", dtype={"GEO_ID": str})
+    acs = acs[acs["GEO_ID"].str.startswith("860Z200US")]
+    occupied, renters = acs["B25003_E001"], acs["B25003_E003"]
+    return pd.DataFrame(
+        {
+            "zip": acs["GEO_ID"].str[-5:],
+            "renter_share": (renters / occupied.where(occupied > 0)).round(4),
+        }
+    )
+
+
+def add_priority(df: pd.DataFrame) -> pd.DataFrame:
+    """priority_score = mean of gap_score and renter_share percentile, for rankable ZIPs."""
+    df = df.copy()
+    r = df["rankable"] & df["renter_share"].notna()
+    renter_pct = df.loc[r, "renter_share"].rank(pct=True) * 100
+    df["priority_score"] = np.nan
+    df.loc[r, "priority_score"] = (df.loc[r, "gap_score"] + renter_pct) / 2
+    return df
+
+
 def compute_metrics(df: pd.DataFrame, min_evs: int = config.MIN_EVS_FOR_RANKING) -> pd.DataFrame:
     """Add ratio, ranking and gap-score columns to a joined ZIP table."""
     df = df.copy()
@@ -270,6 +296,13 @@ def main() -> None:
     z["top_network"] = z["top_network"].fillna("")
     z["city"] = z["city"].fillna(z["county"])  # unincorporated ZCTAs: fall back to county
     z = compute_metrics(z)
+    renters = load_renter_share()
+    if renters is not None:
+        z = add_priority(z.merge(renters, on="zip", how="left"))
+    else:
+        print("ACS renter data not fetched (python -m evgap.fetch --with-acs); skipping.")
+        z["renter_share"] = np.nan
+        z["priority_score"] = np.nan
 
     cols = [
         "zip",
@@ -295,6 +328,8 @@ def main() -> None:
         "rankable",
         "gap_score",
         "gap_rank",
+        "renter_share",
+        "priority_score",
     ]
     z = z[cols]
     z.to_parquet(config.PROCESSED_DIR / "zip_metrics.parquet", index=False)
@@ -312,6 +347,9 @@ def main() -> None:
         "nrel_fetched_at": afdc["fetched_at"],
         "zip_rows": len(z),
         "rankable_zips": int(z["rankable"].sum()),
+        "acs": json.loads((config.RAW_DIR / "acs_meta.json").read_text())
+        if renters is not None
+        else None,
         **st_stats,
     }
     (config.PROCESSED_DIR / "build_meta.json").write_text(json.dumps(meta, indent=2))

@@ -75,6 +75,13 @@ def test_county_totals_match_zip_sums(zips, counties):
         assert c.loc["Bay Area total", col] == zips[col].sum(), col
 
 
+def test_renter_share_and_priority(zips):
+    assert zips["renter_share"].dropna().between(0, 1).all()
+    assert zips["renter_share"].notna().mean() > 0.9
+    assert zips.loc[~zips["rankable"], "priority_score"].isna().all()
+    assert zips["priority_score"].dropna().between(0, 100).all()
+
+
 def test_assign_zcta_to_largest_land_overlap():
     rel = pd.DataFrame(
         {

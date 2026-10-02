@@ -11,6 +11,7 @@
 - **San Francisco 94131 has 1,430 EVs per public port**: 2,859 EVs and 2 ports, **40× the Bay Area average**.
 - **Contra Costa County has 72.0 EVs per public port, 4.8× Napa (15.0)**. It's the most under-served county, about twice the Bay Area average.
 - **DC fast reality check:** 114 battery EVs per public DC fast port, and **57% of those DC fast ports are Tesla**.
+- **Who can't charge at home?** Oakland 94601 ranks first when the gap is combined with the renter share: 1,105 EVs, zero public ports, and **64% of households rent**, so most residents can't install a home charger.
 - Fastest-growing under-served ZIP: **94601 (Oakland)**. EVs there grew 59% in two years, and it still has zero public ports.
 
 <sub>Every number above comes from `data/processed/findings.json` (`python -m evgap.findings`).</sub>
@@ -35,12 +36,15 @@ Run the interactive map locally with `streamlit run app/streamlit_app.py` (live 
 | EV share | EVs ÷ all light-duty vehicles |
 | Gap score | Percentile (0–100) of EVs per port among ZIPs with ≥ 200 EVs; zero-port ZIPs = 100 |
 | Gap rank | 1 = biggest gap. Zero-port ZIPs first (by EV count), then by EVs per port |
+| Renter share | Renter-occupied ÷ occupied housing units (ACS 2020–2024 5-year, table B25003) |
+| Priority score | Mean of gap score and renter-share percentile (0–100), for ZIPs with ≥ 200 EVs |
 
 ## Data sources
 
 - **EV registrations:** [CA DMV, Vehicle Fuel Type Count by Zip Code](https://data.ca.gov/dataset/vehicle-fuel-type-count-by-zip-code) on data.ca.gov. 1 Jan 2026 file (latest) and 1 Jan 2024 (baseline).
 - **Public chargers:** [NREL Alternative Fuel Stations API](https://developer.nlr.gov/docs/transportation/alt-fuel-stations-v1/all/) (AFDC). Open, public, electric stations in California, fetched 2 Oct 2026. NREL is now the National Laboratory of the Rockies, and the API host moved to `developer.nlr.gov`.
 - **Geography:** [Census 2020 ZCTA relationship files](https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.html) (ZCTA ↔ county, ZCTA ↔ place) and [cartographic ZCTA boundaries, 1:500k](https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html). Each ZCTA is assigned to the county it overlaps most by land area, and named after the Census place it overlaps most.
+- **Renters:** [ACS 5-year table B25003](https://www.census.gov/programs-surveys/acs/data/summary-file.html) (2020–2024), by ZCTA, from the keyless table-based summary file (`python -m evgap.fetch --with-acs`).
 
 ## Limitations
 
@@ -58,7 +62,7 @@ Also note: a few ZIPs contain corporate HQs, and their counts likely include fle
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 cp .env.example .env            # add your free key from https://developer.nlr.gov/signup/
-python -m evgap.fetch && python -m evgap.build && python -m evgap.findings
+python -m evgap.fetch --with-acs && python -m evgap.build && python -m evgap.findings
 streamlit run app/streamlit_app.py
 ```
 

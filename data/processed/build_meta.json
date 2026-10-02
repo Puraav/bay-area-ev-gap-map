@@ -4,6 +4,10 @@
   "nrel_fetched_at": "2026-10-02T03:50:34+00:00",
   "zip_rows": 300,
   "rankable_zips": 234,
+  "acs": {
+    "year": 2024,
+    "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b25003.dat"
+  },
   "stations_ca": 20067,
   "needed_pip": 1,
   "pip_matched": 0,

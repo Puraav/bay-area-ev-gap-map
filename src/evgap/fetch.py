@@ -116,6 +116,23 @@ def fetch_nrel(force: bool = False) -> None:
     print(f"  saved {dest.name} ({len(r.content) / 1e6:.1f} MB)")
 
 
+def fetch_acs(force: bool = False) -> None:
+    """Download ACS 5-year tenure (B25003) by ZCTA, newest available vintage."""
+    dest = config.RAW_DIR / "acs_tenure.dat"
+    meta_path = config.RAW_DIR / "acs_meta.json"
+    if dest.exists() and not force:
+        print(f"  skip {dest.name} (exists)")
+        return
+    for year in config.ACS_YEARS:
+        url = config.ACS_URL.format(year=year)
+        if requests.head(url, timeout=TIMEOUT).status_code == 200:
+            download(url, dest, force=True)
+            meta_path.write_text(json.dumps({"year": year, "url": url}, indent=2))
+            return
+        print(f"  ACS {year} not available, trying older")
+    sys.exit("No ACS tenure file found")
+
+
 def summarize() -> None:
     """Print row counts and sanity checks for every raw file."""
     sources = json.loads((config.RAW_DIR / "dmv_sources.json").read_text())
@@ -138,12 +155,18 @@ def summarize() -> None:
     print(f"ZCTA rel:      {len(rel):,} rows")
     size = (config.RAW_DIR / "zcta_2020_500k.zip").stat().st_size / 1e6
     print(f"ZCTA shapes:   {size:.0f} MB")
+    acs = config.RAW_DIR / "acs_tenure.dat"
+    if acs.exists():
+        year = json.loads((config.RAW_DIR / "acs_meta.json").read_text())["year"]
+        rows = sum(1 for line in acs.open() if line.startswith("860Z200US"))
+        print(f"ACS tenure:    {year} 5-year, {rows:,} ZCTAs")
 
 
 def main() -> None:
     """Fetch all raw data, then print a summary."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--force", action="store_true", help="re-download existing files")
+    parser.add_argument("--with-acs", action="store_true", help="also fetch ACS renter data")
     args = parser.parse_args()
     config.RAW_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -157,6 +180,9 @@ def main() -> None:
     download(ZCTA_PLACE_URL, config.RAW_DIR / "zcta_place_rel.txt", args.force)
     print("Census ZCTA shapes...")
     download(ZCTA_SHP_URL, config.RAW_DIR / "zcta_2020_500k.zip", args.force)
+    if args.with_acs:
+        print("Census ACS 5-year tenure (B25003)...")
+        fetch_acs(args.force)
     print()
     summarize()
 
