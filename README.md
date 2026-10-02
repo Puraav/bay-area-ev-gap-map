@@ -84,8 +84,7 @@ data/processed/        zip_metrics.csv, county_metrics.csv, bay_area_zcta.geojso
 
 ## Why I built this
 
-<!-- EDIT ME -->
-[Your 2–3 sentences: why this question matters to you, and what you'd want a city planner or charging company to take from it.] I built it entirely from public data so anyone can check the work.
+I studied computer science in San Francisco and recently moved back to India. While researching EV charging as a business idea, I wanted to see with real data where public chargers are actually missing in the Bay Area, and how San Francisco compares with Mumbai.
 
 ## License
 

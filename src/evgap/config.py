@@ -34,3 +34,5 @@ ACS_URL = (
     "https://www2.census.gov/programs-surveys/acs/summary_file/{year}/table-based-SF/"
     "data/5YRData/acsdt5y{year}-b25003.dat"
 )
+
+GITHUB_URL = "github.com/Puraav/bay-area-ev-gap-map"  # chart footers and app links
