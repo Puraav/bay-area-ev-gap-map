@@ -36,3 +36,46 @@ ACS_URL = (
 )
 
 GITHUB_URL = "github.com/Puraav/bay-area-ev-gap-map"  # chart footers and app links
+
+# --- SF vs Mumbai (spec 09) ---
+MUMBAI_RAW_DIR = RAW_DIR / "mumbai"
+# Vahan "Vehicle Class Wise Fuel Data", Till Today, one export per Greater Mumbai RTO.
+MUMBAI_RTOS = {
+    "MH1": "Mumbai Central",
+    "MH2": "Mumbai West (Andheri)",
+    "MH3": "Mumbai East (Wadala)",
+    "MH47": "Borivali",
+}
+VAHAN_EV_FUELS = {"ELECTRIC(BOV)", "PURE EV", "PLUG-IN HYBRID EV"}  # strong hybrids don't plug in
+VAHAN_SEGMENTS = {
+    "car": ["MOTOR CAR", "MOTOR CAB"],
+    "two_wheeler": [
+        "M-CYCLE/SCOOTER",
+        "MOPED",
+        "MOTORISED CYCLE (CC > 25CC)",
+        "MOTOR CYCLE/SCOOTER-USED FOR HIRE",
+    ],
+    "three_wheeler": [
+        "THREE WHEELER (PASSENGER)",
+        "THREE WHEELER (GOODS)",
+        "E-RICKSHAW(P)",
+        "E-RICKSHAW WITH CART (G)",
+    ],
+}
+# OSM relations: Mumbai City + Mumbai Suburban districts (= Greater Mumbai), San Francisco.
+OSM_RELATIONS = {"Mumbai": [7964376, 7964375], "San Francisco": [111968]}
+OVERPASS_ENDPOINTS = [
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
+]
+HTTP_USER_AGENT = "bay-area-ev-gap-map/0.1 (https://github.com/Puraav/bay-area-ev-gap-map)"
+# Census of India 2011, district totals (latest official count):
+# https://censusindia.gov.in/census.website/data/census-tables (Maharashtra, district A-1)
+MUMBAI_POPULATION_2011 = {"Mumbai City": 3_085_411, "Mumbai Suburban": 9_356_962}
+SF_COUNTY_GEOID = "0500000US06075"
+ACS_POP_URL = (
+    "https://www2.census.gov/programs-surveys/acs/summary_file/{year}/table-based-SF/"
+    "data/5YRData/acsdt5y{year}-b01003.dat"
+)
+DC_SOCKETS = {"type1_combo", "type2_combo", "chademo", "tesla_supercharger", "gb_t_dc"}
+DC_MIN_KW = 50

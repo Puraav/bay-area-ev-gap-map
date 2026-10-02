@@ -1,0 +1,11 @@
+,San Francisco,Mumbai
+EV counts: smallest area published,ZIP code (28 in SF),RTO (4 in Mumbai)
+People per smallest area,"29,651","3,110,593"
+How you get EV counts,Open CSV + API (data.ca.gov),Manual Excel export per RTO (Vahan dashboard)
+Official public-charger list,"Yes: NREL API, 475 stations with port counts",None found
+Best open charger list,OpenStreetMap: 38 stations,OpenStreetMap: 4 stations
+Latest official population,ACS 2020-2024,Census 2011
+EV cars (BEV + PHEV),"50,858","33,948"
+EV share of registered cars,12.4%,2.7%
+EV two-wheelers,–,"41,014"
+EV three-wheelers,–,"1,399"

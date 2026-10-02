@@ -15,6 +15,7 @@ dependencies = [
     "geopandas",
     "shapely",
     "pyarrow",
+    "openpyxl",
     "requests",
     "python-dotenv",
     "streamlit",

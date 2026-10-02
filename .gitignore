@@ -15,3 +15,5 @@ data/processed/*
 !data/processed/bay_area_zcta.geojson
 !data/processed/build_meta.json
 !data/processed/findings.json
+!data/processed/city_comparison.json
+!data/processed/city_comparison.csv

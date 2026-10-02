@@ -1,0 +1,65 @@
+{
+  "San Francisco": {
+    "ev_cars": 50858,
+    "population": 830235,
+    "osm_stations": 38,
+    "osm_ports": 175,
+    "ev_cars_per_osm_port": 290.6,
+    "osm_ports_per_100k": 21.08,
+    "dc_fast_station_share": 0.184,
+    "top_operators": {
+      "Electrify America": 36,
+      "EVgo": 29,
+      "Tesla": 18,
+      "Volta": 16,
+      "ChargePoint": 12
+    },
+    "population_year": "ACS 2020-2024",
+    "nrel_ports": 1171,
+    "nrel_stations": 475,
+    "ev_cars_per_nrel_port": 43.4,
+    "nrel_ports_per_100k": 141.04,
+    "ev_share_of_cars": 0.1244
+  },
+  "Mumbai": {
+    "ev_cars": 33948,
+    "population": 12442373,
+    "osm_stations": 4,
+    "osm_ports": 4,
+    "ev_cars_per_osm_port": 8487.0,
+    "osm_ports_per_100k": 0.03,
+    "dc_fast_station_share": 0.0,
+    "top_operators": {
+      "Unknown": 2,
+      "Honda": 1,
+      "Tata power": 1
+    },
+    "population_year": 2011,
+    "rtos": [
+      "MH1",
+      "MH2",
+      "MH3",
+      "MH47"
+    ],
+    "ev_two_wheelers": 41014,
+    "ev_three_wheelers": 1399,
+    "ev_other": 2429,
+    "ev_share_of_cars": 0.0272,
+    "ev_cars_per_port_if_osm_coverage_like_sf": 1268.3
+  },
+  "data_access": {
+    "sf_geo_units": 28,
+    "sf_people_per_unit": 29651,
+    "mumbai_geo_units": 4,
+    "mumbai_people_per_unit": 3110593,
+    "resolution_ratio": 105,
+    "sf_official_charger_stations": 475,
+    "mumbai_open_charger_stations": 4
+  },
+  "osm_coverage_sf": 0.149,
+  "osm_fetched_at": "2026-10-02T06:51:27+00:00",
+  "notes": {
+    "ev_cars": "SF: DMV light-duty BEV+PHEV registered 1 Jan 2026. Mumbai: Vahan cumulative registrations (Till Today) of electric/PHEV motor cars + motor cabs; not net of scrapped vehicles.",
+    "ports": "OpenStreetMap amenity=charging_station inside the city boundary, public only; ports = capacity tag, else socket counts, else 1."
+  }
+}
