@@ -18,7 +18,7 @@ INK = "#0b0b0b"
 INK_2 = "#52514e"
 MUTED = "#8a8984"
 SIZE_IN, DPI = 8, 150  # 8 in × 150 dpi = 1200 px square
-FOOTER = "github.com/pmghuwalewala/bay-area-ev-gap-map"
+FOOTER = "github.com/Puraav/bay-area-ev-gap-map"
 
 plt.rcParams.update(
     {

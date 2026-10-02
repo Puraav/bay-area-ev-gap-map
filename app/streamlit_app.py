@@ -444,5 +444,5 @@ with tab_method:
 - Tesla Superchargers count as DC fast ports; many are Tesla-first, so non-Tesla drivers may see a bigger gap.
 - Home and workplace charging isn't counted. Areas with many single-family homes need fewer public chargers.
 
-Code: [github.com/pmghuwalewala/bay-area-ev-gap-map](https://github.com/pmghuwalewala/bay-area-ev-gap-map)
+Code: [github.com/Puraav/bay-area-ev-gap-map](https://github.com/Puraav/bay-area-ev-gap-map)
 """)

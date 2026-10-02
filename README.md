@@ -2,7 +2,7 @@
 
 **Which Bay Area ZIP codes have the most electric vehicles per public charging port — where are chargers missing?**
 
-[![CI](https://github.com/pmghuwalewala/bay-area-ev-gap-map/actions/workflows/ci.yml/badge.svg)](https://github.com/pmghuwalewala/bay-area-ev-gap-map/actions/workflows/ci.yml)
+[![CI](https://github.com/Puraav/bay-area-ev-gap-map/actions/workflows/ci.yml/badge.svg)](https://github.com/Puraav/bay-area-ev-gap-map/actions/workflows/ci.yml)
 
 ## Headline findings
 

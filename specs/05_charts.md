@@ -9,7 +9,7 @@
 - Subtitle line: "Data: CA DMV (Jan 2026), NREL AFDC (Oct 2026). Public ports only."
 - Grey bars by default; one accent colour for the bar(s) the title is about.
 - Values printed on bars; no gridline clutter; no 3D, no legends unless necessary.
-- Small footer: `github.com/pmghuwalewala/bay-area-ev-gap-map`.
+- Small footer: `github.com/Puraav/bay-area-ev-gap-map`.
 
 ## Charts
 1. **`01_top_gap_zips.png`** — horizontal bar chart: top 15 rankable ZIPs by EVs per public port, labelled "ZIP · City/County". Accent the #1 bar.
