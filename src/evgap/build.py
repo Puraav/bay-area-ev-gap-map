@@ -63,18 +63,25 @@ def filter_dmv(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def filter_ev_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Keep light-duty BEV and PHEV rows with 5-digit ZIPs. Expects snake_case columns."""
+    df = filter_dmv(df)
+    return df[df["fuel"].isin(config.EV_FUELS)]
+
+
 def dmv_per_zip(path) -> pd.DataFrame:
     """Aggregate a DMV file to BEVs, PHEVs, EVs and all light-duty vehicles per ZIP."""
     raw = pd.read_csv(path, dtype=str)
     mapping = {c: snake(c) for c in raw.columns}
-    df = filter_dmv(raw.rename(columns=mapping))
+    df = raw.rename(columns=mapping)
     df["vehicles"] = pd.to_numeric(df["vehicles"], errors="coerce").fillna(0).astype("int64")
-    df = df.rename(columns={"zip_code": "zip"})
+    ev = filter_ev_rows(df).rename(columns={"zip_code": "zip"})
+    df = filter_dmv(df).rename(columns={"zip_code": "zip"})
     out = (
         pd.DataFrame(
             {
-                "bevs": df[df["fuel"] == "Battery Electric"].groupby("zip")["vehicles"].sum(),
-                "phevs": df[df["fuel"] == "Plug-in Hybrid"].groupby("zip")["vehicles"].sum(),
+                "bevs": ev[ev["fuel"] == "Battery Electric"].groupby("zip")["vehicles"].sum(),
+                "phevs": ev[ev["fuel"] == "Plug-in Hybrid"].groupby("zip")["vehicles"].sum(),
                 "all_vehicles": df.groupby("zip")["vehicles"].sum(),
             }
         )
