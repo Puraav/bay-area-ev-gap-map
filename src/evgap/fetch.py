@@ -21,6 +21,9 @@ ZCTA_REL_URL = (
     "https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/"
     "tab20_zcta520_county20_natl.txt"
 )
+ZCTA_PLACE_URL = (
+    "https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_place20_natl.txt"
+)
 ZCTA_SHP_URL = "https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_zcta520_500k.zip"
 TIMEOUT = 120
 
@@ -150,6 +153,8 @@ def main() -> None:
     fetch_nrel(args.force)
     print("Census ZCTA relationship file...")
     download(ZCTA_REL_URL, config.RAW_DIR / "zcta_county_rel.txt", args.force)
+    print("Census ZCTA place relationship file (for city names)...")
+    download(ZCTA_PLACE_URL, config.RAW_DIR / "zcta_place_rel.txt", args.force)
     print("Census ZCTA shapes...")
     download(ZCTA_SHP_URL, config.RAW_DIR / "zcta_2020_500k.zip", args.force)
     print()

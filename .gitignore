@@ -11,3 +11,6 @@ data/processed/*
 !data/processed/.gitkeep
 !data/processed/zip_metrics.csv
 .streamlit/secrets.toml
+!data/processed/county_metrics.csv
+!data/processed/bay_area_zcta.geojson
+!data/processed/build_meta.json

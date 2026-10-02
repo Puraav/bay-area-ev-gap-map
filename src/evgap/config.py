@@ -23,3 +23,6 @@ MIN_EVS_FOR_RANKING = 200
 
 DMV_LATEST_LABEL = "1/1/2026"
 DMV_BASELINE_LABEL = "1/1/2024"
+
+EV_FUELS = {"Battery Electric", "Plug-in Hybrid"}
+GEOJSON_TOLERANCE = 0.0005  # degrees, for the simplified ZCTA GeoJSON

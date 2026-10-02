@@ -1,0 +1,12 @@
+{
+  "dmv_latest": "1/1/2026 Vehicle Fuel Type Count by Zip Code",
+  "dmv_baseline": "1/1/2024 Vehicle Fuel Type Count by Zip Code",
+  "nrel_fetched_at": "2026-10-02T03:50:34+00:00",
+  "zip_rows": 300,
+  "rankable_zips": 234,
+  "stations_ca": 20067,
+  "needed_pip": 1,
+  "pip_matched": 0,
+  "unmatched_in_region": 0,
+  "stations_bay_area": 6126
+}
